@@ -30,7 +30,7 @@ const developerSchema = new Schema({
     },
     intern_id: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'intern', 
+        ref: 'User', 
         
     }]
 },
