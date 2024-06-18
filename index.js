@@ -10,7 +10,7 @@ connectDB();
 app.use(express.json());
 
 app.get('/',(req,res)=>{
-    res.status(200).json({message:"get all apis"})
+    res.status(200).json({message:"Hello world!"})
 })
 
 app.use("/api/users",require("./routes/userRoutes"))
