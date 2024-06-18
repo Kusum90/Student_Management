@@ -21,7 +21,7 @@ app.use("/api/group",require("./routes/noticeRoutes"))
 
 app.use(errorHandler);
 
-const port= process.env.PORT || 9999;
+const port= process.env.PORT||5001;
 
 app.listen(port,() => {
     console.log(`sever running on port ${port}`); 
