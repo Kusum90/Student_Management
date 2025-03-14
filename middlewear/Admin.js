@@ -59,5 +59,31 @@ exports.internmiddlewear = (req, res, next) => {
 }
 
 
+exports.program_Manager = (req, res, next) => {
+    console.log(req.user);
+    if (req.user.UserRole === 'Program_Manager') {
+        console.log("User is Program_Manager");
+        next();
+    } else {
+        console.log("User is not authorized");
+        return res.json({
+            status: 0,
+            message: 'Unauthorized'
+        });
+    }
+};
 
+exports.admin_programmangermiddlewear = (req, res, next) => {
+    console.log(req.user);
+    if (req.user.UserRole === 'Admin' || req.user.UserRole === 'Program_Manager') {
+        console.log("User is authorized");
+        next();
+    } else {
+        console.log("User is not authorized");
+        return res.json({
+            status: 0,
+            message: 'Unauthorized'
+        });
+    }
+};
 

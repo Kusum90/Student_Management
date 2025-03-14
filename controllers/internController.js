@@ -6,13 +6,13 @@ const mongoose = require("mongoose")
 
 //submit task
 const submittask = asyncHandler(async (req, res) => {
-    const { Developer_id,githubUrl,submit_date } = req.body;
-    if (!Developer_id || !githubUrl || !submit_date) {
+    const { Developer_id,Task_Title,Task_Description,githubUrl,submit_date } = req.body;
+    if (!Developer_id || !Task_Title || !Task_Description|| !githubUrl || !submit_date) {
         res.status(400);
         throw new Error("All Fields are Mandatory");
     }
     const Submit = await InternAssignment.create({
-        Developer_id,githubUrl,submit_date
+        Developer_id,Task_Title,Task_Description,githubUrl,submit_date
     });
     res.status(201).json(Submit);
 });

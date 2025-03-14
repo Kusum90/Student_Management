@@ -3,18 +3,22 @@ const mongoose = require('mongoose');
 const internAssignmentSchema = new mongoose.Schema({
     Intern_id :{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Intern',
+        ref: 'INTERN',
     },
     Developer_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref: "Developer",
         required:true
     },
-    // task_id:{
-    //     type:mongoose.Schema.Types.ObjectId,
-    //     ref: "Developer",
-    //     required:true
-    // },
+    Task_Title:
+    {
+        type:String,
+        required:true
+    },
+    Task_Description:{
+        type:String,
+        required:true
+        },
     githubUrl: 
     {
          type: String ,

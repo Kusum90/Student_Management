@@ -12,6 +12,10 @@ const developerSchema = new Schema({
         type: String,
         required: true
     },
+    file:
+    {
+        type: Array,
+    },
     Assigned_Date:
     {
         type: String,
@@ -30,9 +34,10 @@ const developerSchema = new Schema({
     },
     intern_id: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
+        ref: 'INTERN', 
         
     }]
+
 },
     {
         timestamps: true

@@ -21,13 +21,8 @@ const userSchema = mongoose.Schema({
     },
     UserRole:{
         type: String,
-        enum: ['Admin', 'Hr', 'Developer','Intern'],
+        enum: ['Admin', 'Hr', 'Developer','Intern','Program_Manager' ],
         required:[true,"please add the UserRole"]
-    },
-    Group:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Group",
-        default:null,
     }
 },
 {

@@ -48,6 +48,29 @@ const getgroup = asyncHandler(async (req, res) => {
     res.status(200).json(group);
 });
 
+//get all the interns by group id
+const getInternsByGroupId = asyncHandler(async (req, res) => {
+    const { groupId } = req.params;
+
+    // Check if Group exists
+    const groupExists = await Group.findById(groupId);
+    if (!groupExists) {
+        res.status(404);
+        throw new Error('Group does not exist');
+    }
+
+    // Find users with the role of 'Intern' and the specified Group ID
+    const interns = await User.find({ UserRole: 'Intern', Group: groupId });
+
+    if (!interns.length) {
+        res.status(404);
+        throw new Error("No interns found for this group");
+    }
+
+    res.status(200).json(interns);
+});
+
+
 
 //get group by id
 const getgroupid = asyncHandler(async (req, res) => {
@@ -99,4 +122,5 @@ module.exports = {
     getgroupid,
     updategroup,
     deletegroup,
+    getInternsByGroupId
 }

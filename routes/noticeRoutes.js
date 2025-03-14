@@ -1,16 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const Notice = require('../model/noticeModel');
-const Task = require('../model/developerModel')
+
 const { createnotice, getnotices, updatenotice, deletenotice, getnoticebyid } = require('../controllers/noticeController');
-const { createtask, gettask, updatetask, delettask, gettaskbyid, getTasksByInterns, getAllSubmittedTasks, getalltask, getsubmitedtask } = require('../controllers/taskController');
+const { createtask, gettask, updatetask, delettask, gettaskbyid } = require('../controllers/taskController');
 const { submittask, getsubmit, updatesubmit, deletesubmit, getsubmitid } = require('../controllers/internController');
 const validateToken = require('../middlewear/validateTokenHandler');
-const { hrmiddlewear, developermiddlewear, internmiddlewear, adminmiddlewear } = require('../middlewear/Admin');
-const { creategroup, getgroup, getgroupid, updategroup, deletegroup, addInternToGroup } = require('../controllers/group');
-const { route } = require('./userRoutes');
+const { hrmiddlewear, developermiddlewear, internmiddlewear, adminmiddlewear, program_Manager, admin_programmangermiddlewear } = require('../middlewear/Admin');
+const { creategroup, getgroup, getgroupid, updategroup, deletegroup, getInternsByGroupId } = require('../controllers/group');
 
-//create
+const multer = require('multer');
+const { createintern, getIntern, getInternid, updateIntern, deleteIntern, getInternprofile, getallIntern } = require('../controllers/internProfile');
+const {  addAttendance, calculateAttendance, getAttendencesByDate, getAttendanceByMonth, getAttendanceByWeek } = require('../controllers/Attendece');
+const { createRegistration, updateRegistration, deleteRegistration, getAllRegistrations, getRegistrationById, getprofilebyid } = require('../controllers/Registration');
+const {upload,remove} = require('../controllers/Cloudinary');
+const { createdIntern, loginIntern, getinternByRole, currentintern, getinternbyid, updateinternbyid, deleteintern } = require('../controllers/INTERN');
+const sendSMS = require('../Helper/SendSMS');
+const { createCourse, getCourseById, getAllCoursess, updateCourse, deleteCourse } = require('../controllers/Course');
+const { createAcademicsPage, getAcademicsPageByInternId, updateEnrolledCourses, getAllCourses } = require('../controllers/AcademicsPage');
+const { createDocument, getDocument, getDocuments, getDocumentById, updateDocument, deleteDocument } = require('../controllers/Document');
 
 
 //notice
@@ -44,6 +51,65 @@ router.get("/creatgr",[validateToken,adminmiddlewear],getgroup);
 router.get("/creatgr/:id",[validateToken,adminmiddlewear],getgroupid);
 router.put("/creatgr/:id",[validateToken,adminmiddlewear],updategroup);
 router.delete("/creatgr/:id",[validateToken,adminmiddlewear],deletegroup);
+router.get('/:groupId',[validateToken,adminmiddlewear],getInternsByGroupId)
+
+//intern profile
+router.post("/createI",[validateToken,program_Manager],createintern);
+router.get("/createI",[validateToken,program_Manager],getallIntern);
+router.get("/createI/:id",[validateToken,program_Manager],getInternid);
+router.put("/createI/:id",[validateToken,program_Manager],updateIntern);
+router.delete("/createI/:id",[validateToken,program_Manager],deleteIntern);
+
+//attendance
+router.post('/add',[validateToken,hrmiddlewear],addAttendance);
+router.post('/calculate',[validateToken,hrmiddlewear],calculateAttendance);
+// router.get('/:date',[validateToken,hrmiddlewear],getAttendencesByDate);
+// router.get('/:year/:month',[validateToken,hrmiddlewear],getAttendanceByMonth);
+// router.get('/:year/:week',[validateToken,hrmiddlewear],getAttendanceByWeek);
+
+
+//Registration
+router.post('/', [validateToken,admin_programmangermiddlewear], createRegistration);
+router.put('/:id', [validateToken,admin_programmangermiddlewear], updateRegistration);
+router.delete('/:id',[validateToken,admin_programmangermiddlewear], deleteRegistration);
+router.get('/',[validateToken,admin_programmangermiddlewear], getAllRegistrations);
+router.get('/:id',[validateToken,admin_programmangermiddlewear],getprofilebyid);
+
+
+//Cloudinary
+router.post('/upload',upload);
+router.get('/remove',remove);
+
+//Intern 
+router.post('/INTERN',[validateToken,program_Manager],createdIntern);
+router.post("/login",loginIntern);
+router.get("/role/:role",getinternByRole)
+router.get ("/current",currentintern);
+router.get("/current/:id",getinternbyid);
+router.put("/:id",updateinternbyid);
+router.delete("/:id",deleteintern);
+
+// //sendSMS
+// router.post('/sendSMS',sendSMS);
+
+
+//Courses
+router.post('/createC',[validateToken,adminmiddlewear],createCourse);
+router.get('/createC/:id',[validateToken,adminmiddlewear],getCourseById);
+router.put('/createC/:id',[validateToken,adminmiddlewear],updateCourse);
+router.delete('/createC/:id',[validateToken,adminmiddlewear],deleteCourse);
+//Academicspage
+router.post('/academicsPage', createAcademicsPage);
+router.get('/academicsPage/:internId', getAcademicsPageByInternId);
+router.put('/academicsPage/:internId', updateEnrolledCourses);
+router.get('/courses', getAllCourses);
+
+//Document
+router.post('/document', createDocument);
+router.get('/document', getDocuments);
+router.get('/document/:id', getDocumentById);
+router.put('/document/:id', updateDocument);
+router.delete('/document/:id', deleteDocument);
 
 
 module.exports = router;

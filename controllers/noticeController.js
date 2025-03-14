@@ -1,18 +1,31 @@
 const asyncHandler = require('express-async-handler');
 const Notice = require("../model/noticeModel");
+//const Upload = require("../Helper/upload")
 
 
 //create notice
 const createnotice = asyncHandler(async (req, res) => {
-    const { title, Description, Date } = req.body;
+    const { title, Description, Date, image } = req.body;
     if (!title || !Description || !Date) {
         res.status(400);
         throw new Error("All Fields are Mandatory");
     }
+
+    // let fileUrl = null;
+    // if (req.file) {
+    //     const upload = await Upload.uploadfile(req.file.path);
+    //     fileUrl = upload.secure_url;
+    // } else {
+    //     res.status(400);
+    //     throw new Error("File is mandatory");
+    // }
+    
+
     const notice = await Notice.create({
         title,
         Description,
-        Date
+        Date,
+        image
     });
     res.status(201).json(notice);
 });

@@ -15,6 +15,9 @@ const noticeSchema = new Schema({
         type: String,
         required: true
     },
+    image:{
+        type: Array
+    },
     Date:{
         type:String,
         required:true
@@ -26,3 +29,4 @@ const noticeSchema = new Schema({
 );
 
 module.exports = mongoose.model('Notice', noticeSchema);
+   

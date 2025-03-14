@@ -7,7 +7,7 @@ const Group = require("../model/group");
 
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password, UserRole, Group:group_id, intern_id } = req.body;
-
+    console.log(req.body);
     // Check for required fields
     if (!username || !email || !password || !UserRole) {
         res.status(400);
@@ -38,6 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
 
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log("hashed password:", hashedPassword);
@@ -48,8 +49,6 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password: hashedPassword,
         UserRole,
-        Group: UserRole === 'Intern' ? group_id : null,
-        intern_id: UserRole === 'Intern' ? intern_id : null
     });
 
     console.log(`User created successfully ${user}`);
@@ -58,76 +57,13 @@ const registerUser = asyncHandler(async (req, res) => {
             _id: user.id,
             email: user.email,
             username: user.username,
-            group: user.Group,
-            intern_id: user.intern_id
+            UserRole:user.UserRole,
         });
     } else {
         res.status(400);
         throw new Error("Invalid user data");
     }
 });
-
-
-// const asyncHandler = require("express-async-handler");
-// const User = require("../model/userModel");
-// const bcrypt = require("bcrypt");
-// const jwt = require("jsonwebtoken");
-
-// //register user
-// const registerUser = asyncHandler(async (req, res) => {
-//     const { username, email, password,UserRole, Group, intern_id} = req.body;
-//     if (!username || !email || !password || !UserRole) {
-//         res.status(400);
-//         throw new Error("Please add all fields");
-//     }
-
-//     //if role is intern thn provied group
-//     if (UserRole === 'Intern') {
-//         if(!Group || intern_id)
-//         res.status(400);
-//         throw new Error("Please add Group and intern_id for Intern Role");
-//     }
-
-//      //check if group exists
-//         const groupExists = await Group.findById(Group);
-//         if (!groupExists) {
-//             res.status(400);
-//             throw new Error('Group does not exist');
-//         }
-//     }
-
-
-//     //check if user alredy exists
-//     const userExists = await User.findOne({ email });
-//     if (userExists) {
-//         res.status(400);
-//         throw new Error("User already exists");
-//     }
-//     //Hash password
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     console.log("hashed password:", hashedPassword);
-//     const user = await User.create({
-//         username,
-//         email,
-//         password: hashedPassword,
-//         UserRole,
-//         Group
-//     });
-//     console.log(`User created succesfully ${user}`);
-//     if (user) {
-//         res.status(201).json({
-//             _id: user.id, email: user.email, username: user.username, group:user.Group
-//         });
-//     }
-//     else {
-//         res.status(400);
-//         throw new Error("Invalid user data");
-//     }
-//     // res.json({ message: "register the user" });
-// });
-
-
-
 
 //login user
 const loginuser = asyncHandler(async (req, res) => {
@@ -149,7 +85,7 @@ const loginuser = asyncHandler(async (req, res) => {
         },
             process.env.ACCESS_TOKEN_SECRET,
             {
-                expiresIn: "15m"
+                expiresIn: "99h"
             });
         res.status(200).json({ accessToken });
         //res.json({ message: "login user" });
@@ -165,15 +101,6 @@ const currentuser = asyncHandler(async (req, res) => {
     res.json(req.user);
 });
 
-//get all the logined user
-// const getuser = asyncHandler(async(req,res) => {
-//     const user = await User.findById(req.params.id);
-//     if(!user){
-//      res.status(404);
-//      throw new Error("user not found");
-//     }
-//      res.status(200).json (user);
-//  });
 
 //if userrole is admin then he/she can create user
 const createuser = asyncHandler(async (req, res) => {
@@ -206,11 +133,14 @@ const updateuser = asyncHandler(async (req, res) => {
         
 //get all the user
 const getuser = asyncHandler(async (req, res) => {
-    const user = await User.find({})
-    res.status(200).json(user);
+    const user = await User.find({});
+    res.status(200).json({
+        status: 0,
+        length:user.length, 
+        user});
 });
 
-//get notice by user_id
+//get user by user_id
 const getuserbyid = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -223,6 +153,26 @@ const getuserbyid = asyncHandler(async (req, res) => {
         { new: true }
     );
     res.status(200).json(getuserbyid);
+});
+
+
+// Get users by UserRole
+const getUsersByRole = asyncHandler(async (req, res) => {
+    const { role } = req.params;
+
+    if (!role) {
+        res.status(400);
+        throw new Error("Role is required");
+    }
+
+    const users = await User.find({ UserRole: role });
+
+    if (!users.length) {
+        res.status(404);
+        throw new Error("No users found with this role");
+    }
+
+    res.status(200).json(users);
 });
 
 
@@ -249,9 +199,11 @@ const deleteuser = asyncHandler(async(req,res) => {
     res.status(404);
     throw new Error("user not found");
    }
-   const  deleteuser = await Notice.findByIdAndDelete(req.params.id );
-    res.status(200).json (user);
+   const  deleteuser = await User.findByIdAndDelete(req.params.id );
+    res.status(200).json (deleteuser );
 });
+
+
 module.exports = {
     registerUser,
     loginuser,
@@ -259,8 +211,8 @@ module.exports = {
     getuser,
     getuserbyid,
     updateuserbyid,
-    deleteuser
-    
+    deleteuser,
+    getUsersByRole
 };
 
 

@@ -1,13 +1,14 @@
 const asyncHandler = require('express-async-handler');
-const Task  =  require("../model/developerModel");
+const Task = require("../model/developerModel");
 const Group = require("../model/group");
-const InternAssignment = require("../model/internModel");
-const User = require("../model/userModel");
 
 //create task
 const createtask = asyncHandler(async (req, res) => {
-    const { task , Description , Assigned_Date , Submission_Date, Group: group_id  } = req.body;
-    if (!task || !Description || !Assigned_Date || !Submission_Date || !group_id) {
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+
+    const { Intern_id:Intern_Id,task, Description, Assigned_Date, Submission_Date, Group: group_id , file} = req.body;
+    if (!Intern_Id| !task || !Description || !Assigned_Date || !Submission_Date || !group_id) {
         res.status(400);
         throw new Error("All Fields are Mandatory");
     }
@@ -17,15 +18,16 @@ const createtask = asyncHandler(async (req, res) => {
     if (!groupExist) {
         res.status(400);
         throw new Error("Group does not exist");
-        }
-
+    }
 
     const newtask = await Task.create({
         task,
         Description,
+        file ,
         Assigned_Date,
         Submission_Date,
-        Group: group_id
+        Group: group_id,
+        Intern_id: Intern_Id
     });
     res.status(201).json(newtask);
 });
@@ -71,19 +73,19 @@ const updatetask = asyncHandler(async (req, res) => {
 
 
 //Delete a given task
-const delettask = asyncHandler(async(req,res) => {
+const delettask = asyncHandler(async (req, res) => {
     const task = await Task.findById(req.params.id);
-   if(!task){
-    res.status(404);
-    throw new Error("Task is not found");
-   }
-   const deletetask = await Task.findByIdAndDelete(req.params.id );
-    res.status(200).json (deletetask);
+    if (!task) {
+        res.status(404);
+        throw new Error("Task is not found");
+    }
+    const deletetask = await Task.findByIdAndDelete(req.params.id);
+    res.status(200).json(deletetask);
 });
 
 
 module.exports = {
-    createtask, 
+    createtask,
     gettask,
     gettaskbyid,
     updatetask,
